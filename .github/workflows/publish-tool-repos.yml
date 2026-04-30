@@ -1,0 +1,64 @@
+name: Publish tool repos
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tool: claude
+            prefix: dist/claude
+            repo: laravel-agent-kit-claude
+          - tool: codex
+            prefix: dist/codex
+            repo: laravel-agent-kit-codex
+          - tool: opencode
+            prefix: dist/opencode
+            repo: laravel-agent-kit-opencode
+          - tool: trae
+            prefix: dist/trae
+            repo: laravel-agent-kit-trae
+          - tool: qoder
+            prefix: dist/qoder
+            repo: laravel-agent-kit-qoder
+          - tool: project-assets
+            prefix: dist/project-assets
+            repo: laravel-agent-kit-assets
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Publish ${{ matrix.tool }}
+        env:
+          TARGET_REPO: ${{ matrix.repo }}
+          TARGET_PREFIX: ${{ matrix.prefix }}
+          TARGET_BRANCH: main
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          TARGET_OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          test -n "${PUBLISH_TOKEN}"
+          test -d "${TARGET_PREFIX}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          split_branch="split-${{ matrix.tool }}"
+          git branch -D "${split_branch}" 2>/dev/null || true
+          git subtree split --prefix="${TARGET_PREFIX}" -b "${split_branch}"
+
+          remote_url="https://x-access-token:${PUBLISH_TOKEN}@github.com/${TARGET_OWNER}/${TARGET_REPO}.git"
+          git remote remove target 2>/dev/null || true
+          git remote add target "${remote_url}"
+          git push --force target "${split_branch}:${TARGET_BRANCH}"
