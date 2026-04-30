@@ -51,6 +51,9 @@ jobs:
           test -n "${PUBLISH_TOKEN}"
           test -d "${TARGET_PREFIX}"
 
+          api_status="$(curl -sS -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${PUBLISH_TOKEN}" "https://api.github.com/repos/${TARGET_OWNER}/${TARGET_REPO}")"
+          test "${api_status}" = "200"
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -58,7 +61,7 @@ jobs:
           git branch -D "${split_branch}" 2>/dev/null || true
           git subtree split --prefix="${TARGET_PREFIX}" -b "${split_branch}"
 
-          remote_url="https://x-access-token:${PUBLISH_TOKEN}@github.com/${TARGET_OWNER}/${TARGET_REPO}.git"
+          remote_url="https://${TARGET_OWNER}:${PUBLISH_TOKEN}@github.com/${TARGET_OWNER}/${TARGET_REPO}.git"
           git remote remove target 2>/dev/null || true
           git remote add target "${remote_url}"
           git push --force target "${split_branch}:${TARGET_BRANCH}"
