@@ -37,3 +37,20 @@ metadata:
 - 固定区块：Scope / Constraints / Execution Notes / Review Verdict / Closeout Summary
 
 模板参考：`project/assets/task-doc-template.md`。
+
+## 工程实践（Must / Should）
+
+### Must（违反视为不合格交付）
+
+- 编码前必须调查现有代码库与最近似实现（检索 + 读取关键入口文件）；默认不扩扫。
+- 必须先明确主要矛盾与验收标准，先关键路径后边缘 case，禁止扩改。
+- 必须形成验证闭环：修 bug 可复现→修复→复验；新增/改逻辑先定义 Verify 并在交付输出给出。
+- 禁止重复造轮子：优先复用既有实现与工具函数；未经授权不新增依赖、不改无关代码。
+- 中/重任务必须以 To-do List 开始，覆盖 Read/Change/Verify（重任务补 Risk & Rollback）。
+
+### Should（建议遵守）
+
+- 先交付最小可用版本，再螺旋迭代优化。
+- 抽象克制：一次不抽象，两次谨慎，三次再系统抽象。
+- 反对形式主义：避免过度设计、空洞注释、无意义测试与文件膨胀。
+- 可读性第一：命名清晰、结构稳定、复用已有模式，降低维护成本。

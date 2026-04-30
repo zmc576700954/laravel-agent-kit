@@ -91,6 +91,10 @@
 - `migrationctl-lite.ps1`
 - `task-doc-template.md`
 
+## 可选（结构化规则）
+
+若你的客户端支持额外规则目录加载，可使用同目录下的 `rules/` 作为可选的结构化规则源；不配置也不影响默认使用。
+
 ## Router / 场景闭环（手工路由）
 
 本入口为单文件规则，不假设存在 skills 体系。需要按“场景闭环”工作时，按下列口径手工路由，并以对应闭环输出（Scope/Task Level/Plan/Implement/Verify）交付：
